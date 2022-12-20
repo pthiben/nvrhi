@@ -2553,7 +2553,14 @@ namespace nvrhi
         
         virtual FramebufferHandle createFramebuffer(const FramebufferDesc& desc) = 0;
         
-        virtual GraphicsPipelineHandle createGraphicsPipeline(const GraphicsPipelineDesc& desc, IFramebuffer* fb) = 0;
+        virtual GraphicsPipelineHandle createGraphicsPipeline(const GraphicsPipelineDesc& desc, IFramebuffer* fb)
+        {
+            return createGraphicsPipeline(desc, fb->getFramebufferInfo());
+        }
+        virtual GraphicsPipelineHandle createGraphicsPipeline(const GraphicsPipelineDesc& /*desc*/, const FramebufferInfo& /*fbInfo*/)
+        {
+            return nullptr;
+        }
         
         virtual ComputePipelineHandle createComputePipeline(const ComputePipelineDesc& desc) = 0;
 

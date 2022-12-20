@@ -1034,7 +1034,7 @@ namespace nvrhi::vulkan
 
         FramebufferHandle createFramebuffer(const FramebufferDesc& desc) override;
 
-        GraphicsPipelineHandle createGraphicsPipeline(const GraphicsPipelineDesc& desc, IFramebuffer* fb) override;
+        GraphicsPipelineHandle createGraphicsPipeline(const GraphicsPipelineDesc& desc, const FramebufferInfo& fbInfo) override;
 
         ComputePipelineHandle createComputePipeline(const ComputePipelineDesc& desc) override;
 

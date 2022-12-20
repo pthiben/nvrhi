@@ -354,7 +354,7 @@ namespace nvrhi::vulkan
         return shaderStageCreateInfo;
     }
 
-    GraphicsPipelineHandle Device::createGraphicsPipeline(const GraphicsPipelineDesc& desc, IFramebuffer* _fb)
+    GraphicsPipelineHandle Device::createGraphicsPipeline(const GraphicsPipelineDesc& desc, const FramebufferInfo& fbInfo)
     {
         if (desc.renderState.singlePassStereo.enabled)
         {
@@ -370,7 +370,7 @@ namespace nvrhi::vulkan
 
         GraphicsPipeline *pso = new GraphicsPipeline(m_Context);
         pso->desc = desc;
-        pso->framebufferInfo = fb->framebufferInfo;
+        pso->framebufferInfo = fbInfo;
         
         for (const BindingLayoutHandle& _layout : desc.bindingLayouts)
         {
@@ -488,7 +488,7 @@ namespace nvrhi::vulkan
 		}
 
         auto multisample = vk::PipelineMultisampleStateCreateInfo()
-                            .setRasterizationSamples(vk::SampleCountFlagBits(fb->framebufferInfo.sampleCount))
+                            .setRasterizationSamples(vk::SampleCountFlagBits(fbInfo.sampleCount))
                             .setAlphaToCoverageEnable(blendState.alphaToCoverageEnable);
 
         auto depthStencil = vk::PipelineDepthStencilStateCreateInfo()
@@ -542,7 +542,7 @@ namespace nvrhi::vulkan
                                                   &pso->pipelineLayout);
         CHECK_VK_FAIL(res)
 
-        attachment_vector<vk::PipelineColorBlendAttachmentState> colorBlendAttachments(fb->desc.colorAttachments.size());
+        attachment_vector<vk::PipelineColorBlendAttachmentState> colorBlendAttachments(fbInfo.colorFormats.size());
 
         for(uint32_t i = 0; i < uint32_t(fb->desc.colorAttachments.size()); i++)
         {
@@ -553,7 +553,7 @@ namespace nvrhi::vulkan
                             .setAttachmentCount(uint32_t(colorBlendAttachments.size()))
                             .setPAttachments(colorBlendAttachments.data());
 
-        pso->usesBlendConstants = blendState.usesConstantColor(uint32_t(fb->desc.colorAttachments.size()));
+        pso->usesBlendConstants = blendState.usesConstantColor(uint32_t(fbInfo.colorFormats.size()));
 
         vk::DynamicState dynamicStates[4] = {
             vk::DynamicState::eViewport,
